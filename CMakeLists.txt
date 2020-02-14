@@ -121,6 +121,18 @@ ExternalProject_Add_Step(netcdf_c
 set(NETCDF_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/include")
 set(NETCDF_C_LIBRARY     "${CMAKE_INSTALL_PREFIX}/lib64/libnetcdf.so")
 
+# patch file
+set(patch_file "${CMAKE_CURRENT_SOURCE_DIR}/nf_f-MOD_FLAG.patch")
+set(patch_work_dir "${CMAKE_CURRENT_SOURCE_DIR}/netcdf_fortran")
+message("Apply patch")
+execute_process(
+    COMMAND
+        # if patch is not applied yet, apply
+        patch -p1 -N "--input=${patch_file}"
+    WORKING_DIRECTORY
+        "${patch_work_dir}"
+    )
+
 ExternalProject_Add(netcdf_fortran
     SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/netcdf_fortran"
 
