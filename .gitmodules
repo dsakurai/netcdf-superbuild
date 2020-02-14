@@ -1,6 +1,6 @@
 [submodule "netcdf-fortran"]
-	path = netcdf-fortran
+	path = netcdf_fortran
 	url = https://github.com/Unidata/netcdf-fortran.git
 [submodule "netcdf-c"]
-	path = netcdf-c
+	path = netcdf_c
 	url = https://github.com/Unidata/netcdf-c.git
