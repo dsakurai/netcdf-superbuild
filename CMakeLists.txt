@@ -116,6 +116,37 @@ ExternalProject_Add_Step(netcdf_c
     DEPENDS "${HDF5_DIR}/hdf5-config.cmake"
     )
 
+set(NETCDF_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/include")
+set(NETCDF_C_LIBRARY     "${CMAKE_INSTALL_PREFIX}/lib64/libnetcdf.so")
+
+ExternalProject_Add(netcdf_fortran
+    SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/netcdf_fortran"
+
+    CMAKE_ARGS
+        -DCMAKE_BUILD_TYPE=Release
+        "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
+        ${compilers}
+
+        "-DNETCDF_INCLUDE_DIR=${NETCDF_INCLUDE_DIR}"
+        "-DNETCDF_C_LIBRARY=${NETCDF_C_LIBRARY}"
+
+        # NetCDF Fortran automatically follows the configuration
+        # NetCDF C 
+
+    BUILD_COMMAND make "-j${num_processors}"
+)
+
+# Make sure NetCDF Fortran links to the 
+# NetCDF C this project has built
+ExternalProject_Add_Step(netcdf_fortran
+    check_netcdf_c_lib_exists
+    DEPENDERS configure
+    DEPENDS "${NETCDF_C_LIBRARY}"
+    DEPENDS "${NETCDF_INCLUDE_DIR}/netcdf.h" 
+    )
+
+# Utility for checking the compiler CMake actually used
+
 add_executable(print_compiler_version
     print_compiler_version.c
     )
