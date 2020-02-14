@@ -88,6 +88,8 @@ set(HDF5_DIR "${CMAKE_INSTALL_PREFIX}/share/cmake/hdf5")
 ExternalProject_Add(netcdf_c
     SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/netcdf_c"
 
+    DEPENDS hdf5
+
     CMAKE_ARGS
         -DCMAKE_BUILD_TYPE=Release
         "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
@@ -121,6 +123,8 @@ set(NETCDF_C_LIBRARY     "${CMAKE_INSTALL_PREFIX}/lib64/libnetcdf.so")
 
 ExternalProject_Add(netcdf_fortran
     SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/netcdf_fortran"
+
+    DEPENDS netcdf_c
 
     CMAKE_ARGS
         -DCMAKE_BUILD_TYPE=Release
