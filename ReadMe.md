@@ -1,5 +1,5 @@
 # netcdf-superbuild
-Compiles HDF 5 and NetCDF 4. Latter includes C and Fortran bindings.
+Compiles HDF 5 and NetCDF 4. The latter includes C and Fortran bindings.
 
 A simple way of compiling everything at once:
 ~~~{.sh}
