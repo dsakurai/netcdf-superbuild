@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(netcdf_superbuild LANGUAGES C CXX Fortran)
 
 include(ExternalProject)
+include(GNUInstallDirs)
 
 include(ProcessorCount)
 # number of cores on this system.
@@ -144,8 +145,9 @@ ExternalProject_Add_Step(netcdf_c
     DEPENDS "${HDF5_DIR}/hdf5-config.cmake"
     )
 
+
 set(NETCDF_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/include")
-set(NETCDF_C_LIBRARY     "${CMAKE_INSTALL_PREFIX}/lib64/libnetcdf.so")
+set(NETCDF_C_LIBRARY     "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/libnetcdf.so")
 
 # patch file
 set(patch_file "${CMAKE_CURRENT_SOURCE_DIR}/nf_f-MOD_FLAG.patch")
