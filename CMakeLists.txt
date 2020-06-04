@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.10)
 project(netcdf_superbuild LANGUAGES C CXX Fortran)
 
 include(ExternalProject)
@@ -62,8 +62,22 @@ set(compilers
     )
 
 
+ExternalProject_Add(szip2
+    URL "https://support.hdfgroup.org/ftp/lib-external/szip/2.1.1/src/szip-2.1.1.tar.gz"
+    BUILD_IN_SOURCE Yes
+    INSTALL_DIR "${CMAKE_INSTALL_PREFIX}"
+
+    CMAKE_ARGS
+        -DCMAKE_BUILD_TYPE=Release
+        "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}"
+        ${compilers}
+
+    BUILD_COMMAND make "-j${num_processors}"
+    )
+
 ExternalProject_Add(hdf5
     SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/hdf5"
+    INSTALL_DIR "${CMAKE_INSTALL_PREFIX}"
 
     CMAKE_ARGS
         -DCMAKE_BUILD_TYPE=Release
@@ -73,20 +87,32 @@ ExternalProject_Add(hdf5
         -DHDF5_ENABLE_PARALLEL=Yes
         -DHDF5_ENABLE_THREADSAFE=No # parallel version means not thread-safe
         -DHDF5_BUILD_CPP_LIB=No
+
+        # These don't work for building shared libs
+        # (seems the szip library is not passed to these targets properly
+        # when szip is installed on a non-system library path ).
+        -DHDF5_BUILD_TOOLS=No
+        -DHDF5_BUILD_EXAMPLES=No
+        -DBUILD_TESTING=No
+
         -DBUILD_SHARED_LIBS=Yes
+
         -DHDF5_ENABLE_Z_LIB_SUPPORT=Yes
         -DHDF5_ENABLE_SZIP_SUPPORT=Yes
         -DHDF5_ENABLE_SZIP_ENCODING=Yes
 
+    DEPENDS szip2
+
     BUILD_COMMAND make "-j${num_processors}"
 )
-
+ 
 # The HDF5 this script installed.
 # We do a sanity-check before configuring the NetCDF (C language).
 set(HDF5_DIR "${CMAKE_INSTALL_PREFIX}/share/cmake/hdf5")
-
+ 
 ExternalProject_Add(netcdf_c
     SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/netcdf_c"
+    INSTALL_DIR "${CMAKE_INSTALL_PREFIX}"
 
     DEPENDS hdf5
 
@@ -135,6 +161,7 @@ execute_process(
 
 ExternalProject_Add(netcdf_fortran
     SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/netcdf_fortran"
+    INSTALL_DIR "${CMAKE_INSTALL_PREFIX}"
 
     DEPENDS netcdf_c
 
